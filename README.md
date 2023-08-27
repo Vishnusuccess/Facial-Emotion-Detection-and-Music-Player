@@ -21,9 +21,21 @@ This project also inclides facial id registration and this can be integrated wit
    ```bash
    cd emotion-music-player
 
-3. Install the required packages:
+3. Create an virtual environment
+
+   ```bash
+   
+   python3 -m venv myenv
+   source myenv/bin/activate
+
+4. Install the required packages:
 
    ```bash
    pip install -r requirements.txt
 
-python3 -m venv myenv
+5. Run the main script:
+
+   ```bash
+   python app.py
+   python Face_id.py
+
