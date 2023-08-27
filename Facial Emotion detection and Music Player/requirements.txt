@@ -1,0 +1,7 @@
+numpy==1.21.2
+opencv-python==4.6.0.46
+tensorflow==2.6.0
+pygame==2.0.1
+imutils
+pillow
+
