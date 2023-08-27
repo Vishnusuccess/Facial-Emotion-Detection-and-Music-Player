@@ -15,3 +15,15 @@ This project also inclides facial id registration and this can be integrated wit
 
    ```bash
    git clone https://github.com/Vishnusuccess/Facial-Emotion-Detection-and-Music-Player.git
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd emotion-music-player
+
+3. Install the required packages:
+
+   ```bash
+   pip install -r requirements.txt
+
+python3 -m venv myenv
