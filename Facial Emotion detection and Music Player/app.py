@@ -11,23 +11,26 @@ pygame.mixer.init()
 
 # Define the emotion-to-song recommendation mapping
 emotion_folders = {
-    "happy": "music/Audio 1.mpeg",
-    "neutral": "music/Audio 1.mpeg"
+    "Happy": "/Users/vishnu/Desktop/Facial Emotion detection and Music Player/music",
+    "Surprise": "/Users/vishnu/Desktop/Facial Emotion detection and Music Player/music",
+    # Add more emotions and corresponding music paths as needed
+    "Sad": "music/sad_audio1.mpeg",
 }
+
 # Load the pre-trained facial emotion detection model
 model = load_model('fer_weights.hdf5')
+
 # Load the pre-trained facial emotion detection model (such as OpenCV or CNN-based models)
 def detect_emotion(image):
     # Implement your facial emotion detection algorithm here
     # Perform emotion classification and return the detected emotion
-    class_labels = ['Angry','Disgust', 'Fear', 'Happy','Neutral','Sad','Surprise']
-    face_classifier = cv2.CascadeClassifier(cv2.samples.findFile(cv2.data.haarcascades +
-                                                             'haarcascade_frontalface_default.xml'))
+    class_labels = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
+    face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = face_classifier.detectMultiScale(gray, 1.3, 5)
 
-    emotion_label = None  # Initialize the variable with a default value
+    emotion_label = "Neutral"  # Initialize the variable with a default value
 
     for (x, y, w, h) in faces:
         cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
@@ -37,7 +40,7 @@ def detect_emotion(image):
         # Get image ready for prediction
         roi = roi_gray.astype('float') / 255.0  # Scale
         roi = img_to_array(roi)
-        roi = np.expand_dims(roi, axis=0)  # Expand dims to get it ready for prediction (1, 48, 48, 1)
+        roi = np.expand_dims(roi, axis=0)  # Expand dims to get it ready for prediction (1, 64, 64, 1)
 
         emotion_preds = model.predict(roi)[0]
         emotion_label = class_labels[emotion_preds.argmax()]  # Find the label
@@ -58,28 +61,6 @@ while time.time() - start_time < 5:
     # Perform facial emotion detection on the current frame
     emotion = detect_emotion(frame)
     
-    # Retrieve the corresponding folder path for the detected emotion
-    emotion_folder = emotion_folders.get(emotion)
-    
-    if emotion_folder and not song_playing:
-        # Get the list of music files in the emotion folder
-        music_files = os.listdir(emotion_folder)
-        
-        if music_files:
-            # Select a random music file from the emotion folder
-            
-            random_music = random.choice(music_files)
-            
-            # Play the randomly selected music file
-            music_path = os.path.join(emotion_folder, random_music)
-            music_path = random_music
-            pygame.mixer.music.load(music_path)
-            
-            # Play the music file
-            pygame.mixer.music.play()
-            
-            song_playing = True
-    
     # Display the frame with emotion detection (optional)
     cv2.imshow("Emotion Detection", frame)
     
@@ -87,18 +68,36 @@ while time.time() - start_time < 5:
     if cv2.waitKey(1) != -1:
         break
 
+# Set the flag to indicate that the 5-second emotion detection is over
+song_playing = True
+
 # Release the video capture and close all windows
 cap.release()
 cv2.destroyAllWindows()
 
-if emotion == "Happy":
+# Play the song only if the flag is set
+if song_playing:
+    # Retrieve the corresponding folder path for the detected emotion
+    emotion_folder = emotion_folders.get(emotion)
 
-    song_path = ["music/Audio 1.mpeg"]  # Replace with the path to your song file
-    random_song = random.choice(song_path)
-    pygame.mixer.music.load(random_song)
+    if emotion_folder:
+        # Get the list of music files in the emotion folder
+        music_files = os.listdir(emotion_folder)
 
-    # Play the song
-    pygame.mixer.music.play()
+        if music_files:
+            # Select a random music file from the emotion folder
+            random_music = random.choice(music_files)
+
+            # Play the randomly selected music file
+            music_path = os.path.join(emotion_folder, random_music)
+            pygame.mixer.music.load(music_path)
+
+            # Play the music file
+            pygame.mixer.music.play()
+
+# Wait for the song to finish playing
+while pygame.mixer.music.get_busy():
+    pygame.time.Clock().tick(10)
 
 
 
